@@ -50,3 +50,5 @@ next-env.d.ts
 .cursor/
 AgentStores/
 agent-transcripts/
+
+.vercel-env-payload.json
