@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -12,6 +10,9 @@
 
 # testing
 /coverage
+/playwright-report
+/test-results
+.playwright-mcp
 
 # next.js
 /.next/
@@ -23,6 +24,8 @@
 # misc
 .DS_Store
 *.pem
+*.tmp
+.clerk-signin*
 
 # debug
 npm-debug.log*
@@ -30,8 +33,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — never commit secrets
+.env
+.env.*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +44,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local agent / IDE scratch (not app source)
+.agents/
+.cursor/
+AgentStores/
+agent-transcripts/
