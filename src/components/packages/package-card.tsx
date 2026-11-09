@@ -2,23 +2,30 @@
 
 import React, { useState } from "react";
 import { Package } from "@/db/schema";
-import { brandConfig } from "@/config/brand";
+import { QuoteCalculationResult } from "@/lib/calculator";
+import { PackageQuoteForm } from "@/components/packages/package-quote-form";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Clock, CheckCircle2, X } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
+import { Clock, CheckCircle2, X } from "lucide-react";
 
 interface PackageCardProps {
   pkg: Package;
+  onRequestQuote?: (quote: QuoteCalculationResult) => void;
 }
 
-export function PackageCard({ pkg }: PackageCardProps) {
+export function PackageCard({ pkg, onRequestQuote }: PackageCardProps) {
   const [showDetail, setShowDetail] = useState(false);
+  const [showQuoteForm, setShowQuoteForm] = useState(false);
 
-  const handleWhatsApp = () => {
-    const text = encodeURIComponent(
-      `¡Hola Pasaporte Pandi! Me interesa el paquete "${pkg.title}" (${pkg.durationDays} días desde $${pkg.priceFromUsd} USD). ¿Podrían darme más detalles y fechas disponibles?`
-    );
-    window.open(`https://wa.me/${brandConfig.contact.whatsapp.replace(/\D/g, "")}?text=${text}`, "_blank");
+  const openQuoteForm = () => {
+    setShowDetail(false);
+    setShowQuoteForm(true);
+  };
+
+  const handleQuoteSubmit = (quote: QuoteCalculationResult) => {
+    setShowQuoteForm(false);
+    onRequestQuote?.(quote);
   };
 
   const getCategoryLabel = (cat: string) => {
@@ -31,8 +38,10 @@ export function PackageCard({ pkg }: PackageCardProps) {
         return "Europa Clásica";
       case "playa":
         return "Caribe & Playas";
-      default:
-        return cat;
+      default: {
+        const _exhaustive: string = cat;
+        return _exhaustive;
+      }
     }
   };
 
@@ -42,7 +51,6 @@ export function PackageCard({ pkg }: PackageCardProps) {
         data-testid={`package-card-${pkg.slug}`}
         className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-card border border-border shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300"
       >
-        {/* Card Header & Image */}
         <div className="relative h-56 w-full overflow-hidden bg-muted">
           <img
             src={pkg.imageUrl}
@@ -51,7 +59,6 @@ export function PackageCard({ pkg }: PackageCardProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-          {/* Badges */}
           <div className="absolute top-4 left-4 flex gap-2">
             <span className="rounded-full bg-primary/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-white shadow-sm">
               {getCategoryLabel(pkg.category)}
@@ -72,14 +79,12 @@ export function PackageCard({ pkg }: PackageCardProps) {
           </div>
         </div>
 
-        {/* Card Body */}
         <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
           <div className="space-y-3">
             <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
               {pkg.description}
             </p>
 
-            {/* Inclusions summary (first 3) */}
             <div className="space-y-1.5 pt-1">
               <p className="text-[11px] font-bold uppercase tracking-wider text-foreground">
                 Lo más destacado:
@@ -95,22 +100,10 @@ export function PackageCard({ pkg }: PackageCardProps) {
             </div>
           </div>
 
-          {/* Pricing & CTA */}
           <div className="pt-4 border-t border-border space-y-3">
-            <div className="flex items-baseline justify-between">
-              <div>
-                <p className="text-[11px] text-muted-foreground font-medium">Desde</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black text-primary">
-                    ${Number(pkg.priceFromUsd).toLocaleString()}
-                  </span>
-                  <span className="text-xs font-bold text-muted-foreground">USD / pers.</span>
-                </div>
-              </div>
-              <span className="rounded-lg bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-800 border border-emerald-200">
-                {pkg.installmentsText}
-              </span>
-            </div>
+            <p className="text-xs text-muted-foreground font-medium">
+              Cotización personalizada con un asesor Pandi — sin precios publicados.
+            </p>
 
             <div className="flex gap-2 pt-1">
               <Button
@@ -122,20 +115,20 @@ export function PackageCard({ pkg }: PackageCardProps) {
                 Ver Itinerario
               </Button>
               <Button
-                onClick={handleWhatsApp}
+                onClick={openQuoteForm}
                 variant="whatsapp"
                 size="sm"
                 className="flex-1 text-xs font-bold rounded-xl gap-1 shadow-sm"
+                data-testid={`package-quote-cta-${pkg.slug}`}
               >
-                <MessageCircle className="h-4 w-4" />
-                <span>Apartar</span>
+                <WhatsAppIcon className="h-4 w-4" />
+                <span>Cotizar</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Detailed Itinerary Modal */}
       {showDetail && (
         <div
           data-testid={`package-detail-modal-${pkg.slug}`}
@@ -190,34 +183,37 @@ export function PackageCard({ pkg }: PackageCardProps) {
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-2xl bg-primary/5 border border-primary/20">
                 <div>
-                  <p className="text-xs text-muted-foreground font-medium">Inversión sugerida</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-black text-primary">
-                      ${Number(pkg.priceFromUsd).toLocaleString()} USD
-                    </span>
-                    <span className="text-xs text-muted-foreground">por viajero</span>
-                  </div>
-                  <p className="text-xs text-emerald-700 font-semibold mt-0.5">
-                    {pkg.installmentsText}
+                  <p className="text-xs text-muted-foreground font-medium">Siguiente paso</p>
+                  <p className="text-sm font-bold text-foreground mt-0.5">
+                    Solicita tu cotización con viajeros y mes tentativo
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Un asesor te responde por WhatsApp con disponibilidad real.
                   </p>
                 </div>
 
                 <Button
-                  onClick={() => {
-                    setShowDetail(false);
-                    handleWhatsApp();
-                  }}
+                  onClick={openQuoteForm}
                   variant="whatsapp"
                   size="lg"
                   className="w-full sm:w-auto font-bold rounded-xl gap-2 shadow-md"
+                  data-testid={`package-detail-quote-cta-${pkg.slug}`}
                 >
-                  <MessageCircle className="h-5 w-5" />
-                  <span>Consultar Fechas por WhatsApp</span>
+                  <WhatsAppIcon className="h-5 w-5" />
+                  <span>Solicitar cotización</span>
                 </Button>
               </div>
             </div>
           </div>
         </div>
+      )}
+
+      {showQuoteForm && (
+        <PackageQuoteForm
+          pkg={pkg}
+          onClose={() => setShowQuoteForm(false)}
+          onSubmitQuote={handleQuoteSubmit}
+        />
       )}
     </>
   );

@@ -2,12 +2,14 @@
 
 import React, { useState } from "react";
 import { Package } from "@/db/schema";
+import { QuoteCalculationResult } from "@/lib/calculator";
 import { PackageCard } from "./package-card";
 import { Sparkles, Compass } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 
 interface PackagesCatalogProps {
   initialPackages: Package[];
+  onRequestQuote?: (quote: QuoteCalculationResult) => void;
 }
 
 const CATEGORIES = [
@@ -18,7 +20,7 @@ const CATEGORIES = [
   { key: "playa", label: "Playas" },
 ] as const;
 
-export function PackagesCatalog({ initialPackages }: PackagesCatalogProps) {
+export function PackagesCatalog({ initialPackages, onRequestQuote }: PackagesCatalogProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
 
   const filteredPackages =
@@ -39,7 +41,7 @@ export function PackagesCatalog({ initialPackages }: PackagesCatalogProps) {
             Paquetes destacados diseñados a la medida
           </h2>
           <p className="text-sm text-muted-foreground sm:text-base">
-            Elige tu destino favorito. Todos los paquetes incluyen asesoría experta y facilidades de pago en mensualidades sin intereses.
+            Elige tu destino y solicita cotización por WhatsApp. Un asesor Pandi arma tu propuesta con disponibilidad real — sin precios publicados en la web.
           </p>
         </Reveal>
 
@@ -66,10 +68,13 @@ export function PackagesCatalog({ initialPackages }: PackagesCatalogProps) {
 
         {/* Packages Grid */}
         {filteredPackages.length > 0 ? (
-          <Stagger className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <Stagger
+            key={selectedCategory}
+            className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4"
+          >
             {filteredPackages.map((pkg) => (
               <StaggerItem key={pkg.id}>
-                <PackageCard pkg={pkg} />
+                <PackageCard pkg={pkg} onRequestQuote={onRequestQuote} />
               </StaggerItem>
             ))}
           </Stagger>
@@ -78,7 +83,7 @@ export function PackagesCatalog({ initialPackages }: PackagesCatalogProps) {
             <Sparkles className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
             <h4 className="font-bold text-foreground">No encontramos paquetes en esta categoría</h4>
             <p className="text-xs text-muted-foreground mt-1">
-              Pero no te preocupes: podemos armar tu viaje personalizado 100% a la medida por WhatsApp.
+              Podemos armar tu viaje a la medida: usa el cotizador o solicita cotización por WhatsApp.
             </p>
           </div>
         )}
