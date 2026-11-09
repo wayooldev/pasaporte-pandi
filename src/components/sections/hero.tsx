@@ -8,6 +8,7 @@ import { brandConfig } from "@/config/brand";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import {
   ShieldCheck,
   Sparkles,
@@ -15,7 +16,6 @@ import {
   BadgePercent,
   ArrowRight,
   Star,
-  MessageCircle,
 } from "lucide-react";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -64,9 +64,9 @@ export function Hero() {
               transition={{ duration: 0.55, delay: 0.16, ease }}
               className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
             >
-              {brandConfig.tagline}. Asesoría cercana, cotización en minutos y{" "}
-              <strong className="font-semibold text-foreground">ahorro visible</strong> frente a
-              armarlo por tu cuenta.
+              {brandConfig.tagline}.{" "}
+              <strong className="font-semibold text-foreground">Asesoría cercana</strong> por
+              WhatsApp y cotización personalizada sin tarifas publicadas en la web.
             </motion.p>
 
             <motion.div
@@ -91,7 +91,7 @@ export function Hero() {
                 onClick={openWhatsApp}
                 className="w-full rounded-full text-base font-bold sm:w-auto animate-pulse-whatsapp"
               >
-                <MessageCircle className="h-5 w-5" />
+                <WhatsAppIcon className="h-5 w-5" />
                 WhatsApp con un asesor
               </Button>
             </motion.div>
@@ -134,13 +134,13 @@ export function Hero() {
                   className="absolute -right-2 -top-4 z-10 sm:-right-4"
                 >
                   <Badge variant="accent" className="px-3 py-1 text-xs font-bold shadow-md">
-                    ★ Cotiza y compara ahorro
+                    ★ Cotiza con un asesor
                   </Badge>
                 </motion.div>
 
                 <div className="rounded-[1.75rem] border border-border bg-card p-6 shadow-2xl shadow-primary/10 ring-1 ring-primary/5">
                   <div className="mb-5 flex items-center gap-4">
-                    <div className="relative h-14 w-14 overflow-hidden rounded-2xl shadow-sm ring-1 ring-border">
+                    <div className="relative h-14 w-14 overflow-hidden rounded-full">
                       <Image
                         src="/brand/pandi-logo.png"
                         alt="Logo Pasaporte Pandi"
@@ -172,9 +172,9 @@ export function Hero() {
                     <div className="flex items-start gap-3 rounded-xl bg-muted/70 p-3">
                       <BadgePercent className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                       <div>
-                        <h4 className="text-xs font-bold text-foreground">Ahorro vs. DIY</h4>
+                        <h4 className="text-xs font-bold text-foreground">Cotización a tu medida</h4>
                         <p className="text-xs text-muted-foreground">
-                          En el cotizador ves cuánto te ahorras frente a armarlo por tu cuenta.
+                          Armas tu solicitud en minutos; un asesor responde con disponibilidad real.
                         </p>
                       </div>
                     </div>

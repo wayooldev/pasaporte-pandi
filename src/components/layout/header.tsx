@@ -5,7 +5,8 @@ import Link from "next/link";
 import { PandiLogo } from "@/components/brand/logo";
 import { brandConfig } from "@/config/brand";
 import { Button } from "@/components/ui/button";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
+import { Menu, X } from "lucide-react";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,7 @@ export function Header() {
   const navLinks = [
     { label: "Cotizador Mágico", href: "#cotizador" },
     { label: "Paquetes & Destinos", href: "#paquetes" },
-    { label: "¿Por qué Pandi?", href: "#beneficios" },
+    { label: "Cómo cotizar", href: "#como-cotizar" },
     { label: "Comunidad & Reseñas", href: "#comunidad" },
   ];
 
@@ -50,7 +51,7 @@ export function Header() {
             size="default"
             className="rounded-full shadow-sm"
           >
-            <MessageCircle className="h-4 w-4" />
+            <WhatsAppIcon className="h-4 w-4" />
             <span>Hablar con un Asesor</span>
           </Button>
         </div>
@@ -91,7 +92,7 @@ export function Header() {
                 variant="whatsapp"
                 className="w-full justify-center rounded-xl py-3"
               >
-                <MessageCircle className="h-5 w-5" />
+                <WhatsAppIcon className="h-5 w-5" />
                 <span>WhatsApp Inmediato</span>
               </Button>
             </div>

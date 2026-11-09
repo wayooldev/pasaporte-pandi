@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { Footer } from "@/components/layout/footer";
+import { brandConfig } from "@/config/brand";
 
 describe("Footer Component", () => {
   it("renders brand info and social links", () => {
@@ -37,6 +38,10 @@ describe("Footer Component", () => {
       "href",
       "/terminos"
     );
-    expect(screen.getByText("+52 833 239 0177")).toBeInTheDocument();
+    expect(screen.getByText(brandConfig.contact.whatsappDisplay)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Cómo cotizar" })).toHaveAttribute(
+      "href",
+      "#como-cotizar"
+    );
   });
 });

@@ -70,8 +70,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#beneficios" className="hover:text-primary transition-colors">
-                  Ahorro vs. DIY
+                <Link href="#como-cotizar" className="hover:text-primary transition-colors">
+                  Cómo cotizar
                 </Link>
               </li>
               <li>

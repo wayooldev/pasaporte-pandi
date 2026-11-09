@@ -64,8 +64,8 @@ const certifications = [
     description: "Asociación Internacional de Líneas de Cruceros garantizada",
   },
   {
-    title: "Garantía de Mejor Precio",
-    description: "Monitoreo continuo de promociones antes de tu salida",
+    title: "Asesoría cercana continua",
+    description: "Acompañamiento por WhatsApp antes y durante tu viaje",
   },
 ];
 

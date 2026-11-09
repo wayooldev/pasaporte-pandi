@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Nunito, Fraunces, Great_Vibes } from "next/font/google";
-import { brandConfig } from "@/config/brand";
+import { brandConfig, specialtiesLabelList } from "@/config/brand";
+import { JsonLdScript } from "@/components/seo/json-ld-script";
+import { buildOrganizationJsonLd } from "@/lib/seo/json-ld";
 import "./globals.css";
 
 const bodyFont = Nunito({
@@ -23,14 +25,19 @@ const scriptFont = Great_Vibes({
   display: "swap",
 });
 
+const specialtiesTitle = specialtiesLabelList(", ");
+
 export const metadata: Metadata = {
-  title: `${brandConfig.name} | ${brandConfig.slogan}`,
+  title: `${brandConfig.name} | Agencia de viajes · ${specialtiesTitle}`,
   description: brandConfig.description,
-  metadataBase: new URL("https://pasaportepandi.com"),
+  metadataBase: new URL(brandConfig.siteUrl),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: `${brandConfig.name} | Europa, Disney, Cruceros y Playas`,
+    title: `${brandConfig.name} | ${specialtiesTitle}`,
     description: brandConfig.description,
-    url: "https://pasaportepandi.com",
+    url: brandConfig.siteUrl,
     siteName: brandConfig.name,
     locale: "es_MX",
     type: "website",
@@ -39,13 +46,13 @@ export const metadata: Metadata = {
         url: "/brand/pandi-logo.png",
         width: 800,
         height: 800,
-        alt: "Pasaporte Pandi — Viajes que se convierten en recuerdos",
+        alt: `${brandConfig.name} — ${brandConfig.slogan}`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${brandConfig.name} | ${brandConfig.slogan}`,
+    title: `${brandConfig.name} | Cotiza ${specialtiesTitle}`,
     description: brandConfig.description,
     images: ["/brand/pandi-logo.png"],
   },
@@ -63,6 +70,7 @@ export default function RootLayout({
         className={`scroll-smooth ${bodyFont.variable} ${displayFont.variable} ${scriptFont.variable}`}
       >
         <body className="antialiased font-sans bg-background text-foreground min-h-screen flex flex-col">
+          <JsonLdScript data={buildOrganizationJsonLd()} />
           {children}
         </body>
       </html>

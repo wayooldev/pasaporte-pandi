@@ -15,13 +15,14 @@ import { LeadModal } from "@/components/wizard/lead-modal";
 
 interface HomePageClientProps {
   initialPackages: Package[];
+  children?: React.ReactNode;
 }
 
-export function HomePageClient({ initialPackages }: HomePageClientProps) {
+export function HomePageClient({ initialPackages, children }: HomePageClientProps) {
   const [leadModalQuote, setLeadModalQuote] = useState<QuoteCalculationResult | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDownloadPdfRequest = (quote: QuoteCalculationResult) => {
+  const handleRequestQuote = (quote: QuoteCalculationResult) => {
     setLeadModalQuote(quote);
     setIsModalOpen(true);
   };
@@ -33,8 +34,12 @@ export function HomePageClient({ initialPackages }: HomePageClientProps) {
       <main className="flex-1">
         <Hero />
         <DestinationsStrip />
-        <QuoteWizard onDownloadPdfRequest={handleDownloadPdfRequest} />
-        <PackagesCatalog initialPackages={initialPackages} />
+        <QuoteWizard onRequestQuote={handleRequestQuote} />
+        <PackagesCatalog
+          initialPackages={initialPackages}
+          onRequestQuote={handleRequestQuote}
+        />
+        {children}
         <SocialProof />
       </main>
 
