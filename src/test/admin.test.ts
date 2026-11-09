@@ -78,15 +78,16 @@ describe("Admin API Endpoints and CRUD Operations", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: "Valeria Gómez",
-        contact: "+52 33 1122 3344",
+        phone: "+52 33 1122 3344",
+        email: "valeria@email.com",
         folio: "PANDI-STATUS-TEST-1",
         destination: "Crucero Caribe",
         adults: 2,
         children: 0,
         travelMonth: "mayo",
         experienceStyle: "esencial",
-        estimatedPandiUsd: 1780,
-        estimatedDiyUsd: 2380,
+        estimatedPandiUsd: 0,
+        estimatedDiyUsd: 0,
       }),
     });
     const leadRes = await createLead(leadReq);

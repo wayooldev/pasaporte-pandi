@@ -32,6 +32,8 @@ describe("Database Client and Mock Fallback Repository", () => {
       folio,
       customerName: "Camila Torres",
       customerContact: "+52 55 1234 5678",
+      customerEmail: "camila@email.com",
+      notes: "Preferencia balcón",
       destination: "Orlando: Disney & Universal",
       adults: 2,
       children: 2,

@@ -1,12 +1,78 @@
 import { describe, it, expect } from "vitest";
-import { calculateQuote, generateQuoteFolio, DESTINATIONS_CONFIG } from "@/lib/calculator";
+import {
+  buildQuoteRequest,
+  calculateQuote,
+  generateQuoteFolio,
+  toDestinationKey,
+} from "@/lib/calculator";
 
-describe("Quote Pricing & DIY Savings Calculator Engine", () => {
+describe("Quote request builder (public flow)", () => {
   it("generates a valid folio starting with PANDI-", () => {
     const folio = generateQuoteFolio();
     expect(folio).toMatch(/^PANDI-\d{4}-[A-Z0-9]{4}$/);
   });
 
+  it("builds a request with folio, destination label, and inclusions without requiring experience style", () => {
+    const result = buildQuoteRequest({
+      destination: "disney",
+      adults: 2,
+      children: 1,
+      travelMonth: "julio",
+    });
+
+    expect(result.destinationKey).toBe("disney");
+    expect(result.destinationLabel).toContain("Disney");
+    expect(result.totalTravelers).toBe(3);
+    expect(result.adults).toBe(2);
+    expect(result.children).toBe(1);
+    expect(result.travelMonth).toBe("julio");
+    expect(result.folio).toMatch(/^PANDI-\d{4}-[A-Z0-9]{4}$/);
+    expect(result.inclusions.length).toBeGreaterThan(3);
+    expect(result.pandiTotalUsd).toBe(0);
+    expect(result.diyTotalUsd).toBe(0);
+    expect(result.packageTitle).toBeUndefined();
+  });
+
+  it("preserves optional package title and slug on the quote request", () => {
+    const result = buildQuoteRequest({
+      destination: "disney",
+      adults: 2,
+      children: 1,
+      travelMonth: "julio",
+      packageTitle: "Magia Total en Orlando: Disney & Universal",
+      packageSlug: "magia-total-orlando",
+    });
+
+    expect(result.packageTitle).toBe("Magia Total en Orlando: Disney & Universal");
+    expect(result.packageSlug).toBe("magia-total-orlando");
+    expect(result.pandiTotalUsd).toBe(0);
+  });
+
+  it("uses destinationLabel override for package-driven requests instead of category label", () => {
+    const result = buildQuoteRequest({
+      destination: "playa",
+      adults: 2,
+      children: 1,
+      travelMonth: "julio",
+      packageTitle: "Punta Cana Familiar All-Inclusive",
+      packageSlug: "punta-cana-familia-todo-incluido",
+      destinationLabel: "Punta Cana Familiar All-Inclusive",
+    });
+
+    expect(result.destinationKey).toBe("playa");
+    expect(result.destinationLabel).toBe("Punta Cana Familiar All-Inclusive");
+    expect(result.destinationLabel).not.toContain("Cancún");
+  });
+});
+
+describe("toDestinationKey", () => {
+  it("maps package categories to destination keys and falls back safely", () => {
+    expect(toDestinationKey("crucero")).toBe("crucero");
+    expect(toDestinationKey("unknown")).toBe("disney");
+  });
+});
+
+describe("Quote Pricing & DIY Savings Calculator Engine", () => {
   it("calculates Disney package for standard 2 adults and 1 child", () => {
     const result = calculateQuote({
       destination: "disney",

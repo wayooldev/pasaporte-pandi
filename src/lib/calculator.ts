@@ -1,11 +1,21 @@
 export type DestinationKey = "disney" | "crucero" | "europa" | "playa";
 export type ExperienceStyle = "esencial" | "clasico" | "deluxe";
 
-export interface QuoteInputs {
+/** Public wizard inputs (2 steps: destination + travelers/month). */
+export interface QuoteRequestInputs {
   destination: DestinationKey;
   adults: number;
   children: number;
   travelMonth: string; // "enero", "febrero", ...
+  /** Optional package catalog anchor (title/slug) for package-driven quote requests. */
+  packageTitle?: string;
+  packageSlug?: string;
+  /** Override category label (e.g. package title instead of generic "Cancún & Riviera Maya"). */
+  destinationLabel?: string;
+}
+
+/** @deprecated Prefer QuoteRequestInputs + buildQuoteRequest for the public flow. */
+export interface QuoteInputs extends QuoteRequestInputs {
   experienceStyle: ExperienceStyle;
 }
 
@@ -29,6 +39,18 @@ export interface QuoteCalculationResult {
   inclusions: string[];
   diyRisks: string[];
   pandiAdvantages: string[];
+  /** Present when the request started from a concrete catalog package. */
+  packageTitle?: string;
+  packageSlug?: string;
+}
+
+const DESTINATION_KEYS: DestinationKey[] = ["disney", "crucero", "europa", "playa"];
+
+/** Maps a package category string to a wizard destination key (fallback: disney). */
+export function toDestinationKey(category: string): DestinationKey {
+  return DESTINATION_KEYS.includes(category as DestinationKey)
+    ? (category as DestinationKey)
+    : "disney";
 }
 
 export const DESTINATIONS_CONFIG: Record<
@@ -163,6 +185,43 @@ export function generateQuoteFolio(): string {
   return `PANDI-${year}-${randomChars}`;
 }
 
+/**
+ * Builds a customer-facing quote *request* (folio + trip summary + inclusions).
+ * Price fields are zeroed — not shown in UI/PDF/WhatsApp; leads API may store 0.
+ */
+export function buildQuoteRequest(inputs: QuoteRequestInputs): QuoteCalculationResult {
+  const adults = Math.max(1, inputs.adults || 1);
+  const children = Math.max(0, inputs.children || 0);
+  const totalTravelers = adults + children;
+  const config = DESTINATIONS_CONFIG[inputs.destination] || DESTINATIONS_CONFIG.disney;
+
+  return {
+    folio: generateQuoteFolio(),
+    destinationKey: inputs.destination,
+    destinationLabel: inputs.destinationLabel?.trim() || config.label,
+    totalTravelers,
+    adults,
+    children,
+    travelMonth: inputs.travelMonth,
+    // Internal placeholder for DB/API columns that still expect a style value
+    experienceStyle: "clasico",
+    pandiTotalUsd: 0,
+    pandiPerPersonUsd: 0,
+    pandiMinRangeUsd: 0,
+    pandiMaxRangeUsd: 0,
+    diyTotalUsd: 0,
+    diyPerPersonUsd: 0,
+    savingsUsd: 0,
+    savingsPercentage: 0,
+    inclusions: config.inclusions,
+    diyRisks: config.diyRisks,
+    pandiAdvantages: COMMON_PANDI_ADVANTAGES,
+    ...(inputs.packageTitle ? { packageTitle: inputs.packageTitle } : {}),
+    ...(inputs.packageSlug ? { packageSlug: inputs.packageSlug } : {}),
+  };
+}
+
+/** Internal pricing engine (not used by the public solicitud flow). */
 export function calculateQuote(inputs: QuoteInputs): QuoteCalculationResult {
   const adults = Math.max(1, inputs.adults || 1);
   const children = Math.max(0, inputs.children || 0);

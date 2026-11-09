@@ -1,18 +1,28 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { dataRepository } from "@/db";
+import { notifyAdvisorByEmail } from "@/lib/notify-advisor";
 
 const createLeadSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  contact: z.string().min(6, "Ingresa un número de WhatsApp o correo válido"),
+  phone: z.string().min(8, "Ingresa un número de WhatsApp válido"),
+  email: z
+    .string()
+    .trim()
+    .optional()
+    .default("")
+    .refine((v) => v === "" || z.string().email().safeParse(v).success, {
+      message: "Ingresa un correo electrónico válido",
+    }),
+  notes: z.string().max(1000).optional().default(""),
   folio: z.string().min(5),
   destination: z.string().min(2),
   adults: z.number().int().min(1),
   children: z.number().int().min(0),
   travelMonth: z.string().min(2),
-  experienceStyle: z.string().min(2),
-  estimatedPandiUsd: z.number().positive(),
-  estimatedDiyUsd: z.number().positive(),
+  experienceStyle: z.string().min(2).optional().default("clasico"),
+  estimatedPandiUsd: z.number().min(0).optional().default(0),
+  estimatedDiyUsd: z.number().min(0).optional().default(0),
 });
 
 export async function POST(request: Request) {
@@ -23,7 +33,9 @@ export async function POST(request: Request) {
     const savedLead = await dataRepository.saveQuoteLead({
       folio: validated.folio,
       customerName: validated.name,
-      customerContact: validated.contact,
+      customerContact: validated.phone,
+      customerEmail: validated.email || "",
+      notes: validated.notes?.trim() || null,
       destination: validated.destination,
       adults: validated.adults,
       children: validated.children,
@@ -34,9 +46,25 @@ export async function POST(request: Request) {
       status: "new",
     });
 
+    // Solo constancia por email si el cliente dejó correo
+    const emailResult = validated.email
+      ? await notifyAdvisorByEmail({
+          folio: validated.folio,
+          customerName: validated.name,
+          phone: validated.phone,
+          email: validated.email,
+          destination: validated.destination,
+          adults: validated.adults,
+          children: validated.children,
+          travelMonth: validated.travelMonth,
+          notes: validated.notes,
+        })
+      : { sent: false };
+
     return NextResponse.json({
       success: true,
       lead: savedLead,
+      emailSent: emailResult.sent,
     });
   } catch (error: any) {
     if (error instanceof z.ZodError) {

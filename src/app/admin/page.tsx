@@ -8,13 +8,13 @@ import { Package, QuoteLead, PricingBaseline } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import {
   Users,
   Package as PackageIcon,
   Sliders,
   Plus,
   Trash2,
-  MessageCircle,
   ArrowLeft,
   Loader2,
 } from "lucide-react";
@@ -271,7 +271,12 @@ export default function AdminDashboardPage() {
                               {lead.customerName}
                             </td>
                             <td className="px-5 py-4 text-muted-foreground">
-                              {lead.customerContact}
+                              <div className="flex flex-col gap-0.5">
+                                <span>{lead.customerContact}</span>
+                                {lead.customerEmail ? (
+                                  <span className="text-[11px]">{lead.customerEmail}</span>
+                                ) : null}
+                              </div>
                             </td>
                             <td className="px-5 py-4 text-foreground font-medium">
                               {lead.destination}
@@ -310,7 +315,7 @@ export default function AdminDashboardPage() {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 rounded-lg bg-whatsapp/10 px-2.5 py-1 text-[11px] font-bold text-whatsapp hover:bg-whatsapp hover:text-white transition-colors"
                               >
-                                <MessageCircle className="h-3 w-3" />
+                                <WhatsAppIcon className="h-3 w-3" />
                                 <span>WhatsApp</span>
                               </a>
                             </td>

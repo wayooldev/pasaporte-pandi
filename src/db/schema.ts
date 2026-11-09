@@ -19,7 +19,10 @@ export const quoteLeads = pgTable("quote_leads", {
   id: uuid("id").defaultRandom().primaryKey(),
   folio: varchar("folio", { length: 30 }).notNull().unique(),
   customerName: varchar("customer_name", { length: 150 }).notNull(),
+  /** WhatsApp / phone (required). */
   customerContact: varchar("customer_contact", { length: 100 }).notNull(),
+  customerEmail: varchar("customer_email", { length: 150 }).notNull().default(""),
+  notes: text("notes"),
   destination: varchar("destination", { length: 100 }).notNull(),
   adults: integer("adults").notNull(),
   children: integer("children").default(0).notNull(),

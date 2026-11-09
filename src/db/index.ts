@@ -40,6 +40,8 @@ class MockDataStore {
       id: `lead-${index + 1}-0000-0000-000000000000`,
       status: lead.status ?? "new",
       children: lead.children ?? 0,
+      customerEmail: lead.customerEmail ?? "",
+      notes: lead.notes ?? null,
       createdAt: new Date(Date.now() - index * 86_400_000),
     }));
   }
@@ -157,6 +159,8 @@ export const dataRepository = {
       id: `lead-${Date.now()}`,
       status: lead.status || "new",
       children: lead.children || 0,
+      customerEmail: lead.customerEmail || "",
+      notes: lead.notes ?? null,
       createdAt: new Date(),
     };
     mockStore.quoteLeads.unshift(saved);

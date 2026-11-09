@@ -2,11 +2,24 @@ import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import QRCode from "qrcode";
 import React from "react";
+import fs from "fs";
+import path from "path";
 import { QuotePdfDocument } from "@/lib/pdf-template";
 import { generateWhatsAppHandoffUrl } from "@/lib/whatsapp";
 import { QuoteCalculationResult } from "@/lib/calculator";
 
 export const runtime = "nodejs";
+
+function loadLogoDataUrl(): string | null {
+  try {
+    const logoPath = path.join(process.cwd(), "public", "brand", "pandi-logo.png");
+    if (!fs.existsSync(logoPath)) return null;
+    const buffer = fs.readFileSync(logoPath);
+    return `data:image/png;base64,${buffer.toString("base64")}`;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -23,7 +36,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const whatsAppUrl = generateWhatsAppHandoffUrl(quote, customerName);
+    const whatsAppUrl = generateWhatsAppHandoffUrl(quote, {
+      customerName: customerName || "Viajero Estimado",
+    });
     const qrCodeDataUrl = await QRCode.toDataURL(whatsAppUrl, {
       margin: 1,
       width: 200,
@@ -33,11 +48,14 @@ export async function POST(request: Request) {
       },
     });
 
+    const logoDataUrl = loadLogoDataUrl();
+
     const pdfBuffer = await renderToBuffer(
       React.createElement(QuotePdfDocument, {
         quote,
         customerName: customerName || "Viajero Estimado",
         qrCodeDataUrl,
+        logoDataUrl,
       }) as any
     );
 
@@ -45,7 +63,7 @@ export async function POST(request: Request) {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="Cotizacion-Pandi-${quote.folio}.pdf"`,
+        "Content-Disposition": `attachment; filename="Solicitud-Pandi-${quote.folio}.pdf"`,
         "Cache-Control": "no-store, max-age=0",
       },
     });

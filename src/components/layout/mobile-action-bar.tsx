@@ -2,7 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { MessageCircle, Calculator } from "lucide-react";
+import { Calculator } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { brandConfig } from "@/config/brand";
 
 export function MobileActionBar() {
@@ -40,7 +41,7 @@ export function MobileActionBar() {
             <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
           </span>
 
-          <MessageCircle className="h-5 w-5 fill-white text-whatsapp" />
+          <WhatsAppIcon className="h-5 w-5" />
           <span>Cotizar por WhatsApp</span>
         </button>
       </div>

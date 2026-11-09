@@ -20,13 +20,23 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     marginBottom: 20,
   },
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  logo: {
+    width: 48,
+    height: 48,
+    objectFit: "contain",
+  },
   brandName: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: "Helvetica-Bold",
     color: "#0284c7",
   },
   brandTagline: {
-    fontSize: 9,
+    fontSize: 8,
     color: "#64748b",
     marginTop: 2,
   },
@@ -34,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   folioBadge: {
-    backgroundColor: "#f0fdfa",
+    backgroundColor: "#e0f2fe",
     borderWidth: 1,
     borderColor: "#0284c7",
     borderRadius: 4,
@@ -49,6 +59,17 @@ const styles = StyleSheet.create({
     color: "#94a3b8",
     marginTop: 4,
   },
+  docTitle: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Bold",
+    color: "#0f172a",
+    marginBottom: 4,
+  },
+  docSubtitle: {
+    fontSize: 9,
+    color: "#64748b",
+    marginBottom: 14,
+  },
   tripOverview: {
     backgroundColor: "#f8fafc",
     borderRadius: 8,
@@ -58,52 +79,45 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   destinationTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "Helvetica-Bold",
     color: "#0f172a",
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  metaGrid: {
+  metaRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 6,
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 4,
   },
   metaItem: {
     fontSize: 9,
     color: "#475569",
+    width: "48%",
+    marginBottom: 4,
   },
   metaBold: {
     fontFamily: "Helvetica-Bold",
     color: "#0f172a",
   },
-  pricingBanner: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#ecfdf5",
+  noticeBanner: {
+    backgroundColor: "#e0f2fe",
     borderWidth: 1,
-    borderColor: "#a7f3d0",
+    borderColor: "#7dd3fc",
     borderRadius: 8,
-    padding: 14,
+    padding: 12,
     marginBottom: 18,
   },
-  priceMain: {
-    fontSize: 18,
+  noticeTitle: {
+    fontSize: 10,
     fontFamily: "Helvetica-Bold",
-    color: "#065f46",
+    color: "#0369a1",
+    marginBottom: 3,
   },
-  priceSub: {
-    fontSize: 9,
-    color: "#047857",
-    marginTop: 2,
-  },
-  savingsHighlight: {
-    alignItems: "flex-end",
-    justifyContent: "center",
-  },
-  savingsAmount: {
-    fontSize: 11,
-    fontFamily: "Helvetica-Bold",
-    color: "#047857",
+  noticeText: {
+    fontSize: 8.5,
+    color: "#0c4a6e",
+    lineHeight: 1.35,
   },
   sectionTitle: {
     fontSize: 12,
@@ -132,19 +146,6 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: "#334155",
     flex: 1,
-  },
-  comparatorBox: {
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 18,
-    backgroundColor: "#fafafa",
-  },
-  diyRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
   },
   footerHandoff: {
     flexDirection: "row",
@@ -188,9 +189,15 @@ interface PdfDocumentProps {
   quote: QuoteCalculationResult;
   customerName: string;
   qrCodeDataUrl: string;
+  logoDataUrl?: string | null;
 }
 
-export function QuotePdfDocument({ quote, customerName, qrCodeDataUrl }: PdfDocumentProps) {
+export function QuotePdfDocument({
+  quote,
+  customerName,
+  qrCodeDataUrl,
+  logoDataUrl,
+}: PdfDocumentProps) {
   const currentDate = new Date().toLocaleDateString("es-MX", {
     year: "numeric",
     month: "long",
@@ -198,14 +205,17 @@ export function QuotePdfDocument({ quote, customerName, qrCodeDataUrl }: PdfDocu
   });
 
   return (
-    <Document title={`Cotización ${quote.folio} - Pasaporte Pandi`}>
+    <Document title={`Solicitud ${quote.folio} - Pasaporte Pandi`}>
       <Page size="A4" style={styles.page}>
-        
-        {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.brandName}>Pasaporte Pandi</Text>
-            <Text style={styles.brandTagline}>{brandConfig.tagline}</Text>
+          <View style={styles.brandRow}>
+            {logoDataUrl ? (
+              <Image src={logoDataUrl} style={styles.logo} />
+            ) : null}
+            <View>
+              <Text style={styles.brandName}>{brandConfig.name}</Text>
+              <Text style={styles.brandTagline}>{brandConfig.tagline}</Text>
+            </View>
           </View>
           <View style={styles.folioBox}>
             <Text style={styles.folioBadge}>{quote.folio}</Text>
@@ -213,47 +223,42 @@ export function QuotePdfDocument({ quote, customerName, qrCodeDataUrl }: PdfDocu
           </View>
         </View>
 
-        {/* Trip Overview */}
+        <Text style={styles.docTitle}>Solicitud de cotización inicial</Text>
+        <Text style={styles.docSubtitle}>
+          Documento de preferencias del viajero. No incluye tarifas ni propuesta vinculante.
+        </Text>
+
         <View style={styles.tripOverview}>
           <Text style={styles.destinationTitle}>{quote.destinationLabel}</Text>
-          <View style={styles.metaGrid}>
+          <View style={styles.metaRow}>
             <Text style={styles.metaItem}>
-              Pasajero(a): <Text style={styles.metaBold}>{customerName}</Text>
+              Solicitante: <Text style={styles.metaBold}>{customerName}</Text>
             </Text>
             <Text style={styles.metaItem}>
-              Viajeros: <Text style={styles.metaBold}>{quote.adults} Adulto(s){quote.children > 0 ? `, ${quote.children} Menor(es)` : ""}</Text>
+              Viajeros:{" "}
+              <Text style={styles.metaBold}>
+                {quote.adults} Adulto(s)
+                {quote.children > 0 ? `, ${quote.children} Menor(es)` : ""}
+              </Text>
             </Text>
             <Text style={styles.metaItem}>
-              Mes: <Text style={styles.metaBold}>{quote.travelMonth.toUpperCase()}</Text>
+              Mes tentativo: <Text style={styles.metaBold}>{quote.travelMonth.toUpperCase()}</Text>
             </Text>
             <Text style={styles.metaItem}>
-              Estilo: <Text style={styles.metaBold}>{quote.experienceStyle.toUpperCase()}</Text>
+              Folio: <Text style={styles.metaBold}>{quote.folio}</Text>
             </Text>
           </View>
         </View>
 
-        {/* Price & Savings Banner */}
-        <View style={styles.pricingBanner}>
-          <View>
-            <Text style={styles.priceMain}>
-              ${quote.pandiMinRangeUsd.toLocaleString()} - ${quote.pandiMaxRangeUsd.toLocaleString()} USD
-            </Text>
-            <Text style={styles.priceSub}>
-              Promedio de ${quote.pandiPerPersonUsd.toLocaleString()} USD por persona · Asesoría 100% Incluida
-            </Text>
-          </View>
-          <View style={styles.savingsHighlight}>
-            <Text style={styles.savingsAmount}>
-              Ahorro Pandi: ~${quote.savingsUsd.toLocaleString()} USD ({quote.savingsPercentage}%)
-            </Text>
-            <Text style={{ fontSize: 8, color: "#065f46", marginTop: 2 }}>
-              vs. reserva individual directa (~${quote.diyTotalUsd.toLocaleString()} USD)
-            </Text>
-          </View>
+        <View style={styles.noticeBanner}>
+          <Text style={styles.noticeTitle}>Pendiente de cotización formal</Text>
+          <Text style={styles.noticeText}>
+            El cliente solicita que un asesor prepare disponibilidad, opciones de cabina/hotel y
+            tarifa real. Este PDF solo resume los datos capturados en el cotizador web.
+          </Text>
         </View>
 
-        {/* Inclusions */}
-        <Text style={styles.sectionTitle}>Servicios y Beneficios Incluidos</Text>
+        <Text style={styles.sectionTitle}>Alcance orientativo del destino</Text>
         <View style={styles.inclusionsList}>
           {quote.inclusions.map((item, index) => (
             <View key={index} style={styles.inclusionRow}>
@@ -264,45 +269,16 @@ export function QuotePdfDocument({ quote, customerName, qrCodeDataUrl }: PdfDocu
           <View style={styles.inclusionRow}>
             <Text style={styles.bulletCheck}>✓</Text>
             <Text style={styles.inclusionText}>
-              Acompañamiento y soporte concierge 24/7 de un asesor personal asignado
-            </Text>
-          </View>
-          <View style={styles.inclusionRow}>
-            <Text style={styles.bulletCheck}>✓</Text>
-            <Text style={styles.inclusionText}>
-              Monitoreo continuo de promociones aplicables antes de la salida
+              Acompañamiento concierge y seguimiento por WhatsApp con un asesor Pandi
             </Text>
           </View>
         </View>
 
-        {/* Value comparator */}
-        <Text style={styles.sectionTitle}>Ventajas Pasaporte Pandi vs. Reservar por tu cuenta</Text>
-        <View style={styles.comparatorBox}>
-          <View style={styles.diyRow}>
-            <Text style={{ fontSize: 8.5, color: "#64748b" }}>Costo directo estimado sin agencia:</Text>
-            <Text style={{ fontSize: 8.5, color: "#64748b", textDecoration: "line-through" }}>
-              ${quote.diyTotalUsd.toLocaleString()} USD
-            </Text>
-          </View>
-          <View style={styles.diyRow}>
-            <Text style={{ fontSize: 8.5, fontFamily: "Helvetica-Bold", color: "#059669" }}>
-              Tarifa preferencial Pasaporte Pandi:
-            </Text>
-            <Text style={{ fontSize: 8.5, fontFamily: "Helvetica-Bold", color: "#059669" }}>
-              ${quote.pandiTotalUsd.toLocaleString()} USD
-            </Text>
-          </View>
-          <Text style={{ fontSize: 7.5, color: "#475569", marginTop: 4 }}>
-            * Precios sujetos a disponibilidad al momento de confirmar reservas. Esta cotización no representa una reserva confirmada.
-          </Text>
-        </View>
-
-        {/* Footer with WhatsApp QR code and Contact Details */}
         <View style={styles.footerHandoff}>
           <View style={styles.contactDetails}>
-            <Text style={styles.contactTitle}>¿Listo para hacer realidad tu viaje?</Text>
+            <Text style={styles.contactTitle}>Contacto Pasaporte Pandi</Text>
             <Text style={styles.contactText}>
-              Escanea el código QR con la cámara de tu teléfono para iniciar un chat directo con tu asesor asignado en WhatsApp.
+              Escanea el QR o escribe por WhatsApp mencionando el folio de esta solicitud.
             </Text>
             <Text style={[styles.contactText, { marginTop: 4 }]}>
               WhatsApp: {brandConfig.contact.whatsappDisplay} · {brandConfig.contact.email}
@@ -316,7 +292,6 @@ export function QuotePdfDocument({ quote, customerName, qrCodeDataUrl }: PdfDocu
             <Text style={styles.qrCaption}>Escanear para WhatsApp</Text>
           </View>
         </View>
-
       </Page>
     </Document>
   );
