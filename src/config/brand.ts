@@ -91,8 +91,8 @@ export const brandConfig: BrandConfig = {
     },
   ],
   contact: {
-    whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+528110429340",
-    whatsappDisplay: "+52 811 042 9340",
+    whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+528332390177",
+    whatsappDisplay: "+52 833 239 0177",
     email: "hola@pasaportepandi.com",
     hours: "Lun - Sáb: 9:00 AM - 8:00 PM (Hora CDMX)",
   },
